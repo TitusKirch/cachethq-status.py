@@ -3,7 +3,7 @@ from status import Status
 import configparser
 import os
 import json
-import time
+from datetime import datetime
 
 if __name__ == "__main__":
     # get constants
@@ -57,7 +57,7 @@ if __name__ == "__main__":
                 if "id" in component['statuspage']:
 
                     # set payload
-                    payload = "{\"status\": " + str(status) + ", \"meta\":{\"time\": \"" + str(time.time()) + "\"}}"
+                    payload = "{\"status\": " + str(status) + ", \"meta\":{\"time\": \"" + str(int(datetime.timestamp(datetime.now()))) + "\"}}"
                     path = "/api/v1/components/" + str(component['statuspage']['id'])
 
                     # update cachet component
@@ -77,7 +77,7 @@ if __name__ == "__main__":
                 if "id" in metric['statuspage']:
 
                     # set payload
-                    payload = "{\"value\": " + str(int(status)) + ", \"timestamp\": "+ str(int(time.time())) + "}"
+                    payload = "{\"value\": " + str(int(status)) + ", \"timestamp\": "+ str(int(datetime.timestamp(datetime.now()))) + "}"
                     path = "/api/v1/metrics/" + str(metric['statuspage']['id']) + "/points"
                     
                     # update cachet metric
