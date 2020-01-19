@@ -20,13 +20,16 @@ if __name__ == "__main__":
     if os.path.isfile(DIR + "config.ini"):
         config.read(DIR + "config.ini")
 
-    # create components
+    # create components and metrics
     components = []
+    metrics = []
 
     # check if components file exist
     if os.path.isfile(DIR + "components.json"):
         file = open(DIR + "/components.json")
-        components = json.load(file)['components']
+        jsonData = json.load(file)
+        components = jsonData['components']
+        metrics = jsonData['metrics']
         file.close()
     
     # create cachet
@@ -55,10 +58,28 @@ if __name__ == "__main__":
 
                     # set payload
                     payload = "{\"status\": " + str(status) + ", \"meta\":{\"time\": \"" + str(time.time()) + "\"}}"
-                    path = "api/v1/components/" + str(component['statuspage']['id'])
+                    path = "/api/v1/components/" + str(component['statuspage']['id'])
 
                     # update cachet component
                     cachet.update(path, payload)
+    
+    # go through all metrics
+    for metric in metrics:
+        
+        # get status
+        status = Status(metric['protocol'], metric['address']).get()
 
-        # print(isinstance(cachet, Cachet))
+        # check if statuspage provider
+        if "statuspage" in metric and "provider" in metric['statuspage']:
+            if metric['statuspage']['provider'] == "cachet":
+
+                # check if id isset
+                if "id" in metric['statuspage']:
+
+                    # set payload
+                    payload = "{\"value\": " + str(int(status)) + ", \"timestamp\": "+ str(int(time.time())) + "}"
+                    path = "/api/v1/metrics/" + str(metric['statuspage']['id']) + "/points"
+                    
+                    # update cachet metric
+                    cachet.add(path, payload)
 

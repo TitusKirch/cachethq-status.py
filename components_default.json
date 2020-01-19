@@ -16,5 +16,15 @@
                 "id": 3
             }
         }
+    ],
+    "metrics": [
+        {
+            "protocol": "http_response",
+            "address": "https://tkirch.dev",
+            "statuspage": {
+                "provider": "cachet",
+                "id": 1
+            }
+        }
     ]
 }
