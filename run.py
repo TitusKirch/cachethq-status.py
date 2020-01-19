@@ -57,36 +57,42 @@ if __name__ == "__main__":
 
                         # check if id isset
                         if "id" in component['statuspage']:
-                            
-                            # set path
-                            path = "/api/v1/components/" + str(component['statuspage']['id'])
 
-                            # get cachet component
-                            response = cachet.get(path, payload)
+                            # try to get data
+                            try:
+                                # set path
+                                path = "/api/v1/components/" + str(component['statuspage']['id'])
 
-                            # check status code
-                            if response.status_code == 200:
+                                # get cachet component
+                                response = cachet.get(path, payload)
 
-                                # get json
-                                json = json.loads(response.text)['data']
+                                # check status code
+                                if response.status_code == 200:
 
-                                # check status
-                                if json['status'] != 4:
+                                    # get json
+                                    json = json.loads(response.text)['data']
 
-                                    # get last update
-                                    lastUpdateBefore = int(time.mktime(datetime.strptime(json['updated_at'], "%Y-%m-%d %H:%M:%S").timetuple())) - int(datetime.timestamp(datetime.now()))
-                                    lastUpdateBefore = int(lastUpdateBefore/(-1))
+                                    # check status
+                                    if json['status'] != 4:
 
-                                    # check if last update is not in interval
-                                    if lastUpdateBefore > int(component['statuspage']['interval']):
+                                        # get last update
+                                        lastUpdateBefore = int(time.mktime(datetime.strptime(json['updated_at'], "%Y-%m-%d %H:%M:%S").timetuple())) - int(datetime.timestamp(datetime.now()))
+                                        lastUpdateBefore = int(lastUpdateBefore/(-1))
 
-                                        # get status
-                                        status = Status(component['protocol'], component['address']).get()
+                                        # check if last update is not in interval
+                                        if lastUpdateBefore > int(component['statuspage']['interval']):
 
+                                            # get status
+                                            status = Status(component['protocol'], component['address']).get()
+
+                                        else:
+                                            continue
                                     else:
                                         continue
                                 else:
-                                    continue
+                                    status = 4
+                            except:
+                                status = 4
                         else:
                             continue
                     else:
