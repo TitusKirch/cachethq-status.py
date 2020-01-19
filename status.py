@@ -1,5 +1,6 @@
 import os
 import urllib3
+import requests
 
 class Status:
     # init and pass protocol and address
@@ -24,6 +25,10 @@ class Status:
             self.status = self.ping()
         elif self.protocol == "http":
             self.status = self.http()
+        elif self.protocol == "http_response":
+            self.status = self.http_response()
+        elif self.protocol == "jira":
+            self.status = self.jira()
         
         # return status
         return self.status
@@ -43,6 +48,27 @@ class Status:
             if site_code == 200:
                 return 1
             elif site_code == 503:
+                return 3
+            else:
+                return 4
+        except:
+            return 4
+    
+    # http respone protocol
+    def http_response(self):
+        try:
+            response = requests.post(self.address)
+            return response.elapsed.total_seconds() * 1000
+        except:
+            return 0
+    
+    # jira protocol
+    def jira(self):
+        try:
+            state = requests.get(self.address + "/status").json()['state']
+            if state == "RUNNING":
+                return 1
+            elif state == "MAINTENANCE":
                 return 3
             else:
                 return 4
