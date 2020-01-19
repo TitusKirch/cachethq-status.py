@@ -29,6 +29,8 @@ class Status:
             self.status = self.http_response()
         elif self.protocol == "jira":
             self.status = self.jira()
+        elif self.protocol == "uninteresting_bot":
+            self.status = self.uninteresting_bot()
         
         # return status
         return self.status
@@ -74,5 +76,10 @@ class Status:
                 return 4
         except:
             return 4
+    
+    # uninteresting bot protocol
+    def uninteresting_bot(self):
+        return 4
+
 
 

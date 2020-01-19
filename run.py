@@ -4,6 +4,7 @@ import configparser
 import os
 import json
 from datetime import datetime
+import time
 
 if __name__ == "__main__":
     # get constants
@@ -45,9 +46,58 @@ if __name__ == "__main__":
 
     # go through all components
     for component in components:
-        
-        # get status
-        status = Status(component['protocol'], component['address']).get()
+
+        # check if protocol is uninteresting bot
+        if component['protocol'] == "uninteresting_bot":
+
+            # check if statuspage provider
+            if "statuspage" in component and "provider" in component['statuspage']:
+                if component['statuspage']['provider'] == "cachet":
+                    if "interval" in component['statuspage']:
+
+                        # check if id isset
+                        if "id" in component['statuspage']:
+                            
+                            # set path
+                            path = "/api/v1/components/" + str(component['statuspage']['id'])
+
+                            # get cachet component
+                            response = cachet.get(path, payload)
+
+                            # check status code
+                            if response.status_code == 200:
+
+                                # get json
+                                json = json.loads(response.text)['data']
+
+                                # check status
+                                if json['status'] != 4:
+
+                                    # get last update
+                                    lastUpdateBefore = int(time.mktime(datetime.strptime(json['updated_at'], "%Y-%m-%d %H:%M:%S").timetuple())) - int(datetime.timestamp(datetime.now()))
+                                    lastUpdateBefore = int(lastUpdateBefore/(-1))
+
+                                    # check if last update is not in interval
+                                    if lastUpdateBefore > int(component['statuspage']['interval']):
+
+                                        # get status
+                                        status = Status(component['protocol'], component['address']).get()
+
+                                    else:
+                                        continue
+                                else:
+                                    continue
+                        else:
+                            continue
+                    else:
+                        continue
+                else:
+                    continue
+            else:
+                continue
+        else:
+            # get status
+            status = Status(component['protocol'], component['address']).get()
 
         # check if statuspage provider
         if "statuspage" in component and "provider" in component['statuspage']:
@@ -56,7 +106,7 @@ if __name__ == "__main__":
                 # check if id isset
                 if "id" in component['statuspage']:
 
-                    # set payload
+                    # set payload and path
                     payload = "{\"status\": " + str(status) + ", \"meta\":{\"time\": \"" + str(int(datetime.timestamp(datetime.now()))) + "\"}}"
                     path = "/api/v1/components/" + str(component['statuspage']['id'])
 

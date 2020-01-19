@@ -15,6 +15,15 @@
                 "provider": "cachet",
                 "id": 3
             }
+        },
+        {
+            "protocol": "uninteresting_bot",
+            "address": null,
+            "statuspage": {
+                "provider": "cachet",
+                "id": 9,
+                "interval": 180
+            }
         }
     ],
     "metrics": [
