@@ -1,0 +1,20 @@
+{
+    "components": [
+        {
+            "protocol": "http",
+            "address": "https://tkirch.dev",
+            "statuspage": {
+                "provider": "cachet",
+                "id": 1
+            }
+        },
+        {
+            "protocol": "ping",
+            "address": "127.0.0.1",
+            "statuspage": {
+                "provider": "cachet",
+                "id": 3
+            }
+        }
+    ]
+}
